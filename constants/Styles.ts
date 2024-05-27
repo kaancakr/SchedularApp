@@ -1,5 +1,5 @@
 import Colors from "./Colors";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -95,5 +95,12 @@ export const defaultStyles = StyleSheet.create({
     height: hp(5),
     marginTop: -5,
     borderRadius: 10
+  },
+  welcomeText: {
+    fontSize: 42,
+    color: Colors.mint,
+    fontWeight: "bold",
+    marginTop: 5,
+    fontFamily: Platform.OS === "ios" ? "Avenir Next" : "normal",
   },
 });

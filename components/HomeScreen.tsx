@@ -9,6 +9,7 @@ import {
   TextInput,
   Modal,
   Platform,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -30,6 +31,7 @@ interface Item {
   id: string;
   title: string;
   color: string;
+  selected: boolean;
 }
 
 const HomeScreen = () => {
@@ -47,14 +49,17 @@ const HomeScreen = () => {
   useEffect(() => {
     StatusBar.setBarStyle("light-content");
     loadEvents();
+    if (verticalData.length > 0) {
+      setSelectedItemId(verticalData[0].id);
+    }
   }, []);
 
   const verticalData: Item[] = [
-    { id: "2", title: "new", color: Colors.mint },
-    { id: "3", title: "business", color: Colors.mint },
-    { id: "4", title: "holiday plans", color: Colors.mint },
-    { id: "5", title: "meetings", color: Colors.mint },
-    { id: "6", title: "to do's", color: Colors.mint },
+    { id: "2", title: "new", color: Colors.mint, selected: true },
+    { id: "3", title: "business", color: Colors.mint, selected: false },
+    { id: "4", title: "holiday plans", color: Colors.mint, selected: false },
+    { id: "5", title: "meetings", color: Colors.mint, selected: false },
+    { id: "6", title: "to do's", color: Colors.mint, selected: false },
   ];
 
   const handleItemPress = (id: string) => {
@@ -104,6 +109,10 @@ const HomeScreen = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    setOptionsModalVisible(false);
+  };
+
   const addEvent = () => {
     if (newEventTitle.trim() !== "" && selectedDate && selectedTime) {
       const eventDate = new Date(selectedDate);
@@ -123,6 +132,8 @@ const HomeScreen = () => {
       setSelectedDate(undefined);
       setSelectedTime(undefined);
       setModalVisible(false);
+    } else {
+      Alert.alert("Missing Information", "Please provide all event details.");
     }
   };
 
@@ -140,7 +151,11 @@ const HomeScreen = () => {
     if (selectedEvent) {
       const updatedEvents = events.map((event) =>
         event === selectedEvent
-          ? { ...event, title: newEventTitle, date: new Date(selectedDate as Date) }
+          ? {
+              ...event,
+              title: newEventTitle,
+              date: new Date(selectedDate as Date),
+            }
           : event
       );
       setEvents(updatedEvents);
@@ -262,6 +277,7 @@ const HomeScreen = () => {
               placeholder="Enter event"
               value={newEventTitle}
               onChangeText={setNewEventTitle}
+              placeholderTextColor={Colors.green}
             />
             <TouchableOpacity
               onPress={showDatePicker}
@@ -324,6 +340,12 @@ const HomeScreen = () => {
         <View style={styles.optionsModalContainer}>
           <View style={styles.optionsModalContent}>
             <TouchableOpacity
+              onPress={handleCloseModal}
+              style={styles.cancelButton}
+            >
+              <Ionicons size={25} name="close" />
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={handleUpdateEvent}
               style={styles.updateButton}
             >
@@ -350,7 +372,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: wp(100),
     marginBottom: 10,
-    top: hp(8)
+    top: hp(8),
   },
   headingText: {
     color: "#fff",
@@ -434,6 +456,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
     width: "100%",
+    height: hp(6),
+    fontFamily: "Avenir Next",
+    fontWeight: "bold",
   },
   selectedDateTime: {
     marginVertical: 10,
@@ -476,6 +501,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     width: "100%",
     alignItems: "center",
+    marginTop: 25,
   },
   deleteButton: {
     padding: 10,
@@ -484,6 +510,11 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     width: "100%",
     alignItems: "center",
+  },
+  cancelButton: {
+    position: "absolute",
+    right: 20,
+    top: 10,
   },
   optionButtonText: {
     color: "#fff",
